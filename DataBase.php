@@ -31,6 +31,7 @@ class DataBase{
     }
 
     function logIn($username, $password){
+
         $username = $this->prepareData($username);
         $password = $this->prepareData($password);
         $this->sql = "select * from akaunti where username = '" . $username . "'";
