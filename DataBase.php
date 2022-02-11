@@ -31,7 +31,6 @@ class DataBase{
     }
 
     function logIn($username, $password){
-
         $username = $this->prepareData($username);
         $password = $this->prepareData($password);
         $this->sql = "select * from akaunti where username = '" . $username . "'";
@@ -300,7 +299,11 @@ class DataBase{
                     $SQLKol = $row[$KolonaKol];
                     $SQLMagacinska = $row[$KolonaMagacinska];
                     $NovaKol = $SQLKol+$Kol;
-                    $NovaMagacinska= (($SQLKol*$SQLMagacinska)+($Kol*$MagacinskaCena))/$NovaKol;
+                    if($SQLKol>0) {
+                        $NovaMagacinska = (($SQLKol * $SQLMagacinska) + ($Kol * $MagacinskaCena)) / $NovaKol;
+                    }else{
+                        $NovaMagacinska = $MagacinskaCena;
+                    }
                     $this->sql = "UPDATE `{$TabelaArtikli}` SET `{$KolonaKol}`='" . $NovaKol . "',`{$KolonaMagacinska}`='" . $NovaMagacinska . "' WHERE sifra_na_artikl= '" . $SifraArtikl . "'";
                     $result = mysqli_query($this->connect, $this->sql);
                     if ($result){
