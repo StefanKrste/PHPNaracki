@@ -237,13 +237,14 @@ class DataBase{
         $BrMasa = $this->prepareData($BrMasa);
         $KolonaKol = "kol_".$SifraObjekt;
         $KolonaMagacinska ="magacinska_cena_".$SifraObjekt;
+        $KolMaaloprodaznaObjekt= "maloprodazna_cena_".$SifraObjekt;
         $TabelaArtikli = $idFirma."artikli";
         $TabelaSmetkiInfo = $idFirma."_".$SifraObjekt."smetkiinfo";
         $UspesnoUpd = false;
         header('Content-Type: application/json');
         $this->connect->autocommit(false);
         try {
-            $this->sql = "SELECT sifra_na_artikl,naziv_na_atikl,edinica_merka,maloprodazna_cena,danocna_tarifa,mk_proizvod,`{$KolonaKol}`,`{$KolonaMagacinska}`  FROM " . $TabelaArtikli . " WHERE sifra_na_artikl= '" . $SifraArtikl . "'";
+            $this->sql = "SELECT sifra_na_artikl,naziv_na_atikl,edinica_merka,maloprodazna_cena,danocna_tarifa,mk_proizvod,`{$KolonaKol}`,`{$KolonaMagacinska}`,`{$KolMaaloprodaznaObjekt}`  FROM " . $TabelaArtikli . " WHERE sifra_na_artikl= '" . $SifraArtikl . "'";
             $result = mysqli_query($this->connect, $this->sql);
             $array = array();
             if (mysqli_num_rows($result) != 0) {
@@ -255,7 +256,11 @@ class DataBase{
                     $this->sql = "UPDATE `{$TabelaArtikli}` SET `{$KolonaKol}`=`{$KolonaKol}`-'$Kol' WHERE sifra_na_artikl= '" . $SifraArtikl . "'";
                     $result = mysqli_query($this->connect, $this->sql);
                     if ($result) {
-                        $this->sql = "INSERT INTO " . $TabelaSmetkiInfo . " (broj_na_masa_kasa,sifra,naziv_artikl,ed_merka,kol,maloprodazna,magacinska_cena,mk_proizvod) VALUES ('".$BrMasa."','".$array[0]['sifra_na_artikl']."','".$array[0]['naziv_na_atikl']."','".$array[0]['edinica_merka']."','".$Kol."','".$array[0]['maloprodazna_cena']."','".$array[0][$KolonaMagacinska]."','".$array[0]['mk_proizvod']."')";
+                        $MaloprodaznaNova = $array[0][$KolMaaloprodaznaObjekt];
+                        if(!$MaloprodaznaNova){
+                            $MaloprodaznaNova=$array[0]['maloprodazna_cena'];
+                        }
+                        $this->sql = "INSERT INTO " . $TabelaSmetkiInfo . " (broj_na_masa_kasa,sifra,naziv_artikl,ed_merka,kol,maloprodazna,magacinska_cena,mk_proizvod) VALUES ('".$BrMasa."','".$array[0]['sifra_na_artikl']."','".$array[0]['naziv_na_atikl']."','".$array[0]['edinica_merka']."','".$Kol."','".$MaloprodaznaNova."','".$array[0][$KolonaMagacinska]."','".$array[0]['mk_proizvod']."')";
                         if (mysqli_query($this->connect, $this->sql) === TRUE) {
                             $last_id = $this->connect->insert_id;
                             $array[0]["id"] = $last_id;
