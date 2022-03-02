@@ -366,7 +366,7 @@ class DataBase{
             $result = mysqli_query($this->connect, $this->sql);
             $row = mysqli_fetch_assoc($result);
 
-            if(isset($row['broj'])) {
+            if(!isset($row['broj'])) {
                 $SmetkaBroj = 1;
                 $Status = 0;
             } else {
@@ -377,6 +377,7 @@ class DataBase{
                 } else {
                     $SmetkaBroj = $SmetkaBroj + 1;
                 }
+                $Status = 0;
             }
 
             $this->sql = "INSERT INTO " . $TabelaSmetki . " (broj,broj_na_masa_kasa,datum,vreme,vkupno,ispecatil,status) VALUES ('" . $SmetkaBroj . "','" . $BrMasa . "','" . $datum . "','" . $vreme . "','" . $Vkupno . "','" . $ImePrezime . "','" . $Status . "')";
